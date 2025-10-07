@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OBS 跑馬燈</title>
+<style>
+  :root{
+    --height: 72px;
+    --font-size: 28px;
+    --speed: 15s;
+    --gap: 200px; /* 這裡改成 200px，訊息間隔更大 */
+    --text-color: #000000;  /* 黑色字 */
+    --shadow: 0 2px 6px rgba(255,255,255,.6);
+    --bg: transparent;
+    --padding-x: 18px;
+    --font-weight: 700;
+    --letter-spacing: 0.5px;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  .ticker-wrap{
+    position: relative;
+    width: 100vw;
+    height: var(--height);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 var(--padding-x);
+  }
+
+  .ticker{
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    white-space: nowrap;
+    will-change: transform;
+    animation: scroll var(--speed) linear infinite;
+  }
+
+  .item{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+    font-size: var(--font-size);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing);
+    color: var(--text-color);
+    text-shadow: var(--shadow);
+  }
+
+  .highlight{
+    color: #00b900; /* LINE 綠色 */
+  }
+
+  @keyframes scroll{
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  .ticker > .track{ display: inline-flex; align-items: center; gap: var(--gap); }
+</style>
+</head>
+<body>
+  <div class="ticker-wrap">
+    <div class="ticker" id="ticker">
+      <div class="track" id="track1"></div>
+      <div class="track" id="track2"></div>
+    </div>
+  </div>
+
+<script>
+const messages = [
+  '📱 LINE客服 : <span class="highlight">@225crrmi</span>',
+    '⚠️ 請準時結單，避免影響下單權限',
+  '🎁 直播不定時放福利，記得關注留言區'
+];
+
+function render(items){
+  const el1 = document.getElementById('track1');
+  const el2 = document.getElementById('track2');
+  const makeItem = (html) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'item';
+    wrap.innerHTML = html;
+    return wrap;
+  };
+  items.forEach(m => {
+    el1.appendChild(makeItem(m));
+    el2.appendChild(makeItem(m));
+  });
+}
+
+render(messages);
+
+// 自動依寬度調整速度
+function adjustSpeed(){
+  const ticker = document.getElementById('ticker');
+  const wrapWidth = document.querySelector('.ticker-wrap').clientWidth;
+  const contentWidth = ticker.scrollWidth / 2;
+  const pxPerSec = 120;
+  const duration = Math.max((contentWidth + wrapWidth) / pxPerSec, 8);
+  document.documentElement.style.setProperty('--speed', duration + 's');
+}
+window.addEventListener('load', adjustSpeed);
+window.addEventListener('resize', adjustSpeed);
+</script>
+</body>
+</html>
